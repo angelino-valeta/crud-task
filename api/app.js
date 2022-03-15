@@ -1,8 +1,12 @@
 const express = require('express');
-
+// CONNECT DB
 const mongoose = require('./database/database');
-
 const app = express();
+
+
+// MODELS
+const TaskList = require('./database/models/taskList');
+const Task = require('./database/models/task');
 
 // CORS
 app.use(function(req, res, next){

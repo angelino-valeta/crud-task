@@ -127,7 +127,18 @@ app.post('/tasklists/:tasklistsid/tasks', (req, res) => {
 		.catch((error) => {
 			res.status(500);
 			console.log(error);
+		});
+});
+
+app.get('/tasklists/:tasklistsid/tasks/:taskid', (req, res) => {
+	Task.find({ _taskListId: req.params.tasklistsid, _id: req.params.taskid })
+		.then((tasks) => {
+			res.status(200).send(tasks);
 		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
 });
 
  

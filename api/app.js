@@ -163,5 +163,16 @@ app.put('/tasklists/:tasklistid/tasks/:taskid', (req, res) => {
 		});
 });
 
+app.delete('/tasklists/:tasklistsid/tasks/:taskid', (req, res) => {
+	Task.findOneAndDelete({ _taskListId: req.params.tasklistsid, _id: req.params.taskid })
+		.then((task) => {
+			res.status(200).send(task);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+});
+
  
 app.listen(3000, () => { console.log('Server running on port 3000!')});

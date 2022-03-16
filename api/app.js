@@ -24,7 +24,7 @@ app.use(function(req, res, next){
 app.use(express.json());
 
 // ENDPOINTS
-
+	// TASKLISTS
 app.get('/tasklists', (req, res) => {
 	TaskList.find({})
 		.then((tasklist) => {
@@ -94,14 +94,99 @@ app.put('/tasklists/:id', (req, res) => {
 
 app.delete('/tasklists/:id', (req, res) => {
 	const id = req.params.id;
-	TaskList.findOneAndDelete({_id: id})
+	const result = TaskList.findOneAndDelete({_id: id})
 		.then((taskList) => {
-			res.status(200).send(taskList);
+			deleteTasks(taskList);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+
+	const deleteTasks = (tasklist) => {
+		Task.deleteMany({ _taskListId: id })
+			.then(() => {
+				return tasklist;
+			})
+			.catch((error) => {
+				res.status(500);
+				console.log(error);
+			});
+	}
+
+	res.status(200).send(result);
+
+});
+
+
+// TASK
+
+app.get('/tasklists/:tasklistsid/tasks', (req, res) => {
+	Task.find({_taskListId: req.params.tasklistsid})
+		.then((tasks) => {
+			res.status(200).send(tasks);
 		})
 		.catch((error) => {
 			res.status(500);
 			console.log(error);
 		});
 });
+
+app.post('/tasklists/:tasklistsid/tasks', (req, res) => {
+	const body = {title: req.body.title, _taskListId: req.params.tasklistsid }
+	Task(body).save()
+		.then((task) => {
+			res.status(201).send(task);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+});
+
+app.get('/tasklists/:tasklistsid/tasks/:taskid', (req, res) => {
+	Task.find({ _taskListId: req.params.tasklistsid, _id: req.params.taskid })
+		.then((tasks) => {
+			res.status(200).send(tasks);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+});
+
+app.patch('/tasklists/:tasklistsid/tasks/:taskid', (req, res) => {
+	Task.findOneAndUpdate({_taskListId: req.params.tasklistsid, _id: req.params.taskid}, {$set: req.body })
+		.then((task) => {
+			res.status(200).send(task);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+});
+
+app.put('/tasklists/:tasklistid/tasks/:taskid', (req, res) => {
+	Task.findOneAndUpdate({_taskListId: req.params.tasklistid, _id: req.params.taskid }, {$set: req.body })
+		.then((task) => {
+			res.status(200).send(task);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+});
+
+app.delete('/tasklists/:tasklistsid/tasks/:taskid', (req, res) => {
+	Task.findOneAndDelete({ _taskListId: req.params.tasklistsid, _id: req.params.taskid })
+		.then((task) => {
+			res.status(200).send(task);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+});
+
  
 app.listen(3000, () => { console.log('Server running on port 3000!')});

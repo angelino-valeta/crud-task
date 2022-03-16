@@ -152,5 +152,16 @@ app.patch('/tasklists/:tasklistsid/tasks/:taskid', (req, res) => {
 		});
 });
 
+app.put('/tasklists/:tasklistid/tasks/:taskid', (req, res) => {
+	Task.findOneAndUpdate({_taskListId: req.params.tasklistid, _id: req.params.taskid }, {$set: req.body })
+		.then((task) => {
+			res.status(200).send(task);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+});
+
  
 app.listen(3000, () => { console.log('Server running on port 3000!')});

@@ -94,14 +94,28 @@ app.put('/tasklists/:id', (req, res) => {
 
 app.delete('/tasklists/:id', (req, res) => {
 	const id = req.params.id;
-	TaskList.findOneAndDelete({_id: id})
+	const result = TaskList.findOneAndDelete({_id: id})
 		.then((taskList) => {
-			res.status(200).send(taskList);
+			deleteTasks(taskList);
 		})
 		.catch((error) => {
 			res.status(500);
 			console.log(error);
 		});
+
+	const deleteTasks = (tasklist) => {
+		Task.deleteMany({ _taskListId: id })
+			.then(() => {
+				return tasklist;
+			})
+			.catch((error) => {
+				res.status(500);
+				console.log(error);
+			});
+	}
+
+	res.status(200).send(result);
+
 });
 
 
@@ -122,7 +136,7 @@ app.post('/tasklists/:tasklistsid/tasks', (req, res) => {
 	const body = {title: req.body.title, _taskListId: req.params.tasklistsid }
 	Task(body).save()
 		.then((task) => {
-			res.status(200).send(task);
+			res.status(201).send(task);
 		})
 		.catch((error) => {
 			res.status(500);

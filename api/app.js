@@ -24,7 +24,7 @@ app.use(function(req, res, next){
 app.use(express.json());
 
 // ENDPOINTS
-
+	// TASKLISTS
 app.get('/tasklists', (req, res) => {
 	TaskList.find({})
 		.then((tasklist) => {
@@ -103,5 +103,32 @@ app.delete('/tasklists/:id', (req, res) => {
 			console.log(error);
 		});
 });
+
+
+// TASK
+
+app.get('/tasklists/:tasklistsid/tasks', (req, res) => {
+	Task.find({_taskListId: req.params.tasklistsid})
+		.then((tasks) => {
+			res.status(200).send(tasks);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		});
+});
+
+app.post('/tasklists/:tasklistsid/tasks', (req, res) => {
+	const body = {title: req.body.title, _taskListId: req.params.tasklistsid }
+	Task(body).save()
+		.then((task) => {
+			res.status(200).send(task);
+		})
+		.catch((error) => {
+			res.status(500);
+			console.log(error);
+		})
+});
+
  
 app.listen(3000, () => { console.log('Server running on port 3000!')});
